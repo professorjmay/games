@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Family Bingo</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
@@ -13,95 +13,112 @@
       min-height: 100vh; padding: 15px; color: #333;
     }
     .container {
-      max-width: 420px; margin: 0 auto; background: #fff; border-radius: 20px;
+      max-width: 440px; margin: 0 auto; background: #fff; border-radius: 20px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden;
     }
-    .header { background: linear-gradient(135deg, #ff6b6b, #ffa500); color: #fff; padding: 20px; text-align: center; }
-    .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-    .header p { font-size: 14px; opacity: 0.9; }
-    .completion-message {
-      display:none; background: linear-gradient(135deg, #00d4aa, #00a8ff); color:#fff;
-      padding: 20px; text-align: center; font-weight: 600; animation: slideDown .5s ease;
+    .header { background: linear-gradient(135deg, #ff6b6b, #ffa500); color:#fff; padding:20px; text-align:center; }
+    .header h1 { font-size:22px; font-weight:700; margin-bottom:6px; }
+    .header p { font-size:14px; opacity:.9; }
+
+    .section { padding: 16px 20px; }
+    .section-title { font-weight:700; margin-bottom:8px; }
+
+    /* Setup screen */
+    .setup-grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; }
+    .check-item {
+      display:flex; align-items:center; gap:8px; background:#f8f9fa; border:1px solid #e9ecef;
+      border-radius:10px; padding:10px;
     }
-    @keyframes slideDown { from {transform: translateY(-100%);} to {transform: translateY(0);} }
+    .setup-actions { display:flex; gap:10px; margin-top:12px; }
+    .btn {
+      border:none; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; transition:.2s transform;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: linear-gradient(135deg, #00d4aa, #00a8ff); color:#fff; }
+    .btn-secondary { background:#f1f3f5; color:#333; border:1px solid #e9ecef; }
+    .hint { font-size:12px; color:#666; margin-top:8px; text-align:center; }
+
+    /* Game screen */
+    .completion-message { display:none; background: linear-gradient(135deg, #00d4aa, #00a8ff); color:#fff; padding:18px; text-align:center; font-weight:700; }
     .progress { background:#f8f9fa; padding:15px 20px; border-bottom:1px solid #e9ecef; }
     .progress-bar { background:#e9ecef; height:8px; border-radius:4px; overflow:hidden; margin-bottom:8px; }
-    .progress-fill { background: linear-gradient(90deg, #00d4aa, #00a8ff); height:100%; width:0%; transition: width .5s ease; }
+    .progress-fill { background: linear-gradient(90deg, #00d4aa, #00a8ff); height:100%; width:0%; transition: width .4s ease; }
     .progress-text { font-size:14px; color:#666; text-align:center; }
-    .instructions { padding: 15px 20px; background:#f8f9fa; font-size:13px; color:#666; text-align:center; line-height:1.4; }
-    .controls { padding:10px 20px; text-align:center; background:#f8f9fa; border-top:1px solid #e9ecef; }
-    .shuffle-btn {
-      background: linear-gradient(135deg, #ff6b6b, #ffa500); color:#fff; border:none; padding:8px 16px;
-      border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; transition:all .3s ease;
-    }
-    .shuffle-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,107,.3); }
+    .instructions { padding: 12px 20px; background:#f8f9fa; font-size:13px; color:#666; text-align:center; line-height:1.4; }
+
     .bingo-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:1px; background:#e9ecef; padding:15px; }
     .bingo-square {
       background:#fff; border:none; padding:12px 6px; font-size:12px; line-height:1.25; text-align:center; cursor:pointer;
-      transition: all .3s ease; min-height:88px; display:flex; flex-direction:column; justify-content:center; align-items:center;
-      position:relative; border-radius:8px;
+      min-height:88px; display:flex; flex-direction:column; justify-content:center; align-items:center;
+      border-radius:8px; transition: .2s transform, .2s background;
     }
-    .bingo-square:hover { background:#f8f9fa; transform: translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.1); }
-    .bingo-square.completed { background: linear-gradient(135deg, #00d4aa, #00a8ff); color:#fff; transform: scale(.98); }
-    .bingo-square.completed:hover { transform: scale(1.02); }
+    .bingo-square:hover { background:#f8f9fa; transform: translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08); }
+    .bingo-square.completed { background: linear-gradient(135deg, #00d4aa, #00a8ff); color:#fff; transform: none; }
     .completed-info { font-size:10px; font-weight:600; margin-top:6px; opacity:.95; line-height:1.1; }
-    .modal {
-      display:none; position:fixed; inset:0; background: rgba(0,0,0,.5); z-index:1000; justify-content:center; align-items:center; padding:20px;
-    }
-    .modal-content {
-      background:#fff; padding:22px; border-radius:15px; width:100%; max-width:380px; text-align:center;
-      box-shadow: 0 20px 40px rgba(0,0,0,.2);
-    }
-    .modal h3 { margin-bottom:10px; color:#333; font-size:18px; }
-    .modal p { margin-bottom:12px; color:#666; font-size:14px; line-height:1.4; }
+
+    .controls { padding:12px 20px; display:flex; gap:10px; justify-content:center; background:#f8f9fa; border-top:1px solid #e9ecef; }
+    .shuffle-btn { composes: btn btn-primary; }
+    .link-btn { background:#f1f3f5; color:#333; border:1px solid #e9ecef; }
+
+    /* Modal */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; justify-content:center; align-items:center; padding:20px; }
+    .modal-content { background:#fff; padding:22px; border-radius:15px; width:100%; max-width:380px; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,.2); }
+    .modal h3 { margin-bottom:8px; font-size:18px; }
+    .modal p { margin-bottom:10px; color:#666; font-size:14px; }
     .modal textarea {
       width:100%; min-height:90px; padding:10px; border:2px solid #e9ecef; border-radius:8px; font-size:14px; resize:vertical;
       transition: border-color .3s ease; margin-bottom:12px;
     }
     .modal textarea:focus { outline:none; border-color:#00a8ff; }
     .modal-buttons { display:flex; gap:10px; }
-    .btn { flex:1; padding:12px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:all .3s ease; }
-    .btn-primary { background: linear-gradient(135deg, #00d4aa, #00a8ff); color:#fff; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,168,255,.3); }
-    .btn-secondary { background:#f8f9fa; color:#666; border:1px solid #e9ecef; }
-    .btn-secondary:hover { background:#e9ecef; }
     .btn-danger { background:#dc3545; color:#fff; }
-    .btn-danger:hover { background:#c82333; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <h1>Family Bingo</h1>
-      <p>Tap a square when you hear/see it—add a quick note for context.</p>
+      <p>Choose who’s playing, then fill your 3×3 card with their sayings/actions.</p>
     </div>
 
-    <div class="completion-message" id="completionMessage">
-      🎉 Bingo! You filled the whole card! 🎉
+    <!-- SETUP SCREEN -->
+    <div id="setupScreen" class="section" style="display:none;">
+      <div class="section-title">Who’s playing?</div>
+      <div id="playerChecklist" class="setup-grid"><!-- checkboxes injected here --></div>
+      <div class="setup-actions">
+        <button class="btn btn-secondary" id="selectAllBtn">Select All</button>
+        <button class="btn btn-secondary" id="clearBtn">Clear</button>
+        <button class="btn btn-primary" id="startBtn" style="margin-left:auto;">Start Game</button>
+      </div>
+      <div class="hint">We’ll build your card randomly from the selected players. If there aren’t enough prompts, FREE SPACE tiles fill the rest.</div>
     </div>
 
-    <div class="progress">
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-text" id="progressText">0 of 9 completed</div>
-    </div>
+    <!-- GAME SCREEN -->
+    <div id="gameScreen" style="display:none;">
+      <div class="completion-message" id="completionMessage">🎉 Bingo! You filled the whole card! 🎉</div>
 
-    <div class="instructions">
-      Each player gets a randomized 3×3 card of family sayings/actions. Click to record what happened.
-    </div>
+      <div class="progress">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText">0 of 9 completed</div>
+      </div>
 
-    <div class="bingo-grid" id="bingoGrid"></div>
+      <div class="instructions">Tap a square when it happens. Add a quick note for context. FREE SPACE tiles are already filled.</div>
 
-    <div class="controls">
-      <button class="shuffle-btn" onclick="newGame()">🎲 Clear and Randomize</button>
+      <div class="bingo-grid" id="bingoGrid"></div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" id="changePlayersBtn">Change Players</button>
+        <button class="btn btn-primary" id="shuffleBtn">🎲 Clear & Randomize</button>
+      </div>
     </div>
   </div>
 
-  <!-- Modal -->
+  <!-- MODAL -->
   <div class="modal" id="infoModal">
     <div class="modal-content">
       <h3 id="modalTitle">Nice catch!</h3>
       <p id="modalText">Add a quick note about what happened:</p>
-      <textarea id="contextInput" placeholder="e.g., Sabrina said “Bruh” when we ran out of chips."></textarea>
+      <textarea id="contextInput" placeholder="e.g., Sabrina said “Bruh” when we opened gifts."></textarea>
       <div class="modal-buttons" id="modalButtons">
         <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
         <button class="btn btn-primary" onclick="saveInfo()">Save</button>
@@ -110,177 +127,251 @@
   </div>
 
   <script>
-    // ----- Config -----
-    const TOTAL_SQUARES = 9;
-    const STORAGE_KEY = 'familyBingo_v1';
+    // ---------- Config ----------
+    const GRID_SIZE = 3;                 // 3x3
+    const TOTAL_SQUARES = GRID_SIZE * GRID_SIZE;
+    const STORAGE_KEY = 'familyBingo_v2';
+    const FREE_SPACE = 'FREE SPACE';
 
-    // Family list; prototype uses 4 placeholders per person
-    const familyMembers = [
+    // Placeholder data: 4 items per person (swap in your real list later)
+    const FAMILY = [
       "Norm","Judy","Dick","Lois","James","Sharon","Patrice","Bill",
       "Aidan","Collin","Sabrina","Delaney","Catherine"
     ];
-
-    // Build placeholder deck like "Bill: saying or action 1..4"
-    const allBingoItems = familyMembers.flatMap(name =>
-      Array.from({length: 4}, (_, i) => `${name}: saying or action ${i+1}`)
+    const DATA = Object.fromEntries(
+      FAMILY.map(name => [name, [
+        `${name}: saying or action 1`,
+        `${name}: saying or action 2`,
+        `${name}: saying or action 3`,
+        `${name}: saying or action 4`,
+      ]])
     );
 
-    // ----- State -----
-    let selectedBingoItems = [];
-    let gameData = {};               // { [index]: { context, ts } }
+    // ---------- State ----------
+    let selectedPlayers = [];
+    let selectedBingoItems = [];           // 9 items shown on the card
+    let completions = {};                  // { index: { context, ts } } (FREE SPACE auto-filled)
     let currentSquareIndex = -1;
 
-    // ----- Utils -----
-    function shuffleArray(arr) {
-      const a = [...arr];
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
-    function escapeHTML(s) {
-      return s.replace(/[&<>"']/g, m => ({
-        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
-      }[m]));
-    }
+    // ---------- Helpers ----------
+    const $ = sel => document.querySelector(sel);
+    function escapeHTML(s){ return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[m])); }
+    function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
 
-    // ----- Card generation & storage -----
-    function generateRandomCard() {
-      return shuffleArray(allBingoItems).slice(0, TOTAL_SQUARES);
-    }
-
-    function loadGameData() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const data = JSON.parse(saved);
-        selectedBingoItems = data.items || generateRandomCard();
-        gameData = data.completions || {};
-      } else {
-        selectedBingoItems = generateRandomCard();
-        gameData = {};
-      }
-      updateProgress();
-      saveGameData();
-    }
-
-    function saveGameData() {
+    function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        items: selectedBingoItems,
-        completions: gameData
+        selectedPlayers, items: selectedBingoItems, completions
       }));
     }
-
-    function newGame() {
-      if (Object.keys(gameData).length && !confirm('Reset your current card and progress?')) return;
-      selectedBingoItems = generateRandomCard();
-      gameData = {};
-      document.getElementById('completionMessage').style.display = 'none';
-      updateProgress();
-      generateGrid();
-      saveGameData();
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return null;
+      try { return JSON.parse(saved); } catch { return null; }
     }
 
-    // ----- UI -----
-    function generateGrid() {
-      const grid = document.getElementById('bingoGrid');
-      grid.innerHTML = '';
-
-      selectedBingoItems.forEach((item, index) => {
-        const square = document.createElement('button');
-        square.className = 'bingo-square';
-        square.innerHTML = escapeHTML(item);
-        square.onclick = () => openModal(index);
-
-        if (gameData[index]) {
-          square.classList.add('completed');
-          square.innerHTML = `${escapeHTML(item)}
-            <div class="completed-info">${escapeHTML(gameData[index].context)}</div>`;
-        }
-
-        grid.appendChild(square);
+    // ---------- Setup Screen ----------
+    function renderChecklist() {
+      const wrap = $('#playerChecklist');
+      wrap.innerHTML = '';
+      FAMILY.forEach(name => {
+        const id = `p_${name.replace(/\s+/g,'_')}`;
+        const div = document.createElement('label');
+        div.className = 'check-item';
+        div.innerHTML = `
+          <input type="checkbox" id="${id}" ${selectedPlayers.includes(name)?'checked':''}>
+          <span>${escapeHTML(name)}</span>
+        `;
+        wrap.appendChild(div);
       });
     }
 
-    function openModal(squareIndex) {
-      currentSquareIndex = squareIndex;
-      const isCompleted = !!gameData[squareIndex];
+    function getCheckedPlayers() {
+      return FAMILY.filter(name => $('#p_'+name.replace(/\s+/g,'_')).checked);
+    }
 
-      document.getElementById('modalTitle').textContent = isCompleted ? 'Edit note' : 'Nice catch!';
-      document.getElementById('modalText').textContent = `"${selectedBingoItems[squareIndex]}"`;
-      document.getElementById('contextInput').value = isCompleted ? (gameData[squareIndex].context || '') : '';
+    // ---------- Card Generation ----------
+    function poolFromPlayers(players) {
+      const pool = [];
+      players.forEach(name => {
+        const items = DATA[name] || [];
+        items.forEach(t => pool.push(t));
+      });
+      // Ensure unique prompts
+      return [...new Set(pool)];
+    }
 
-      const buttons = document.getElementById('modalButtons');
-      buttons.innerHTML = isCompleted
+    function buildCard(players) {
+      const pool = poolFromPlayers(players);
+      let items = [];
+
+      if (pool.length >= TOTAL_SQUARES) {
+        items = shuffle(pool).slice(0, TOTAL_SQUARES);
+      } else {
+        items = shuffle(pool);
+        // Fill remainder with FREE SPACE(s)
+        while (items.length < TOTAL_SQUARES) items.push(FREE_SPACE);
+      }
+      return items;
+    }
+
+    // ---------- Game Screen ----------
+    function generateGrid() {
+      const grid = $('#bingoGrid');
+      grid.innerHTML = '';
+      selectedBingoItems.forEach((item, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'bingo-square';
+        btn.innerHTML = escapeHTML(item);
+        btn.onclick = () => openSquare(index);
+
+        // Auto-complete FREE SPACE on first render
+        if (item === FREE_SPACE && !completions[index]) {
+          completions[index] = { context: 'Free space', ts: new Date().toISOString() };
+        }
+        if (completions[index]) {
+          btn.classList.add('completed');
+          btn.innerHTML = `${escapeHTML(item)}
+            <div class="completed-info">${escapeHTML(completions[index].context || '')}</div>`;
+        }
+
+        grid.appendChild(btn);
+      });
+      updateProgress();
+      saveState();
+    }
+
+    function openSquare(index) {
+      const item = selectedBingoItems[index];
+      if (item === FREE_SPACE) return; // free spaces don't open modal
+
+      currentSquareIndex = index;
+      const isEditing = !!completions[index];
+
+      $('#modalTitle').textContent = isEditing ? 'Edit note' : 'Nice catch!';
+      $('#modalText').textContent = `"${item}"`;
+      $('#contextInput').value = isEditing ? (completions[index].context || '') : '';
+
+      const buttons = $('#modalButtons');
+      buttons.innerHTML = isEditing
         ? `<button class="btn btn-danger" onclick="removeEntry()">Remove</button>
            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
            <button class="btn btn-primary" onclick="saveInfo()">Update</button>`
         : `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
            <button class="btn btn-primary" onclick="saveInfo()">Save</button>`;
 
-      document.getElementById('infoModal').style.display = 'flex';
-      document.getElementById('contextInput').focus();
+      $('#infoModal').style.display = 'flex';
+      $('#contextInput').focus();
     }
 
-    function closeModal() {
-      document.getElementById('infoModal').style.display = 'none';
-      currentSquareIndex = -1;
-    }
+    function closeModal(){ $('#infoModal').style.display='none'; currentSquareIndex = -1; }
 
     function removeEntry() {
-      if (gameData[currentSquareIndex]) {
-        delete gameData[currentSquareIndex];
-        saveGameData();
-
+      if (completions[currentSquareIndex]) {
+        delete completions[currentSquareIndex];
+        saveState();
         const square = document.querySelectorAll('.bingo-square')[currentSquareIndex];
         square.classList.remove('completed');
         square.innerHTML = escapeHTML(selectedBingoItems[currentSquareIndex]);
-
         updateProgress();
-        document.getElementById('completionMessage').style.display = 'none';
+        $('#completionMessage').style.display = 'none';
       }
       closeModal();
     }
 
     function saveInfo() {
-      const context = document.getElementById('contextInput').value.trim();
-      if (!context) { alert('Please add a quick note.'); return; }
+      const ctx = $('#contextInput').value.trim();
+      if (!ctx) { alert('Please add a quick note.'); return; }
 
-      gameData[currentSquareIndex] = { context, ts: new Date().toISOString() };
-      saveGameData();
+      completions[currentSquareIndex] = { context: ctx, ts: new Date().toISOString() };
+      saveState();
 
       const square = document.querySelectorAll('.bingo-square')[currentSquareIndex];
       square.classList.add('completed');
       square.innerHTML = `${escapeHTML(selectedBingoItems[currentSquareIndex])}
-        <div class="completed-info">${escapeHTML(context)}</div>`;
+        <div class="completed-info">${escapeHTML(ctx)}</div>`;
 
       updateProgress();
-      if (Object.keys(gameData).length === TOTAL_SQUARES) setTimeout(showCompletion, 200);
+      if (Object.keys(completions).length === TOTAL_SQUARES) setTimeout(()=>$('#completionMessage').style.display='block', 150);
       closeModal();
     }
 
     function updateProgress() {
-      const completed = Object.keys(gameData).length;
-      document.getElementById('progressFill').style.width = `${(completed / TOTAL_SQUARES) * 100}%`;
-      document.getElementById('progressText').textContent = `${completed} of ${TOTAL_SQUARES} completed`;
+      const done = Object.keys(completions).length;
+      $('#progressFill').style.width = `${(done / TOTAL_SQUARES) * 100}%`;
+      $('#progressText').textContent = `${done} of ${TOTAL_SQUARES} completed`;
     }
 
-    function showCompletion() {
-      document.getElementById('completionMessage').style.display = 'block';
+    // ---------- Transitions ----------
+    function showSetup() {
+      $('#setupScreen').style.display = 'block';
+      $('#gameScreen').style.display = 'none';
+    }
+    function showGame() {
+      $('#setupScreen').style.display = 'none';
+      $('#gameScreen').style.display = 'block';
     }
 
-    // Optional: Ctrl/Cmd+Enter to save from textarea
-    document.addEventListener('keydown', (e) => {
-      const modalOpen = document.getElementById('infoModal').style.display === 'flex';
-      if (!modalOpen) return;
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') saveInfo();
+    // ---------- Event wiring ----------
+    $('#selectAllBtn')?.addEventListener('click', ()=> {
+      FAMILY.forEach(n => { $('#p_'+n.replace(/\s+/g,'_')).checked = true; });
+    });
+    $('#clearBtn')?.addEventListener('click', ()=> {
+      FAMILY.forEach(n => { $('#p_'+n.replace(/\s+/g,'_')).checked = false; });
+    });
+    $('#startBtn')?.addEventListener('click', ()=> {
+      const picks = getCheckedPlayers();
+      if (picks.length === 0) { alert('Pick at least one player.'); return; }
+      selectedPlayers = picks;
+      selectedBingoItems = buildCard(selectedPlayers);
+      completions = {}; // reset completions; FREE SPACE will auto-fill on render
+      $('#completionMessage').style.display = 'none';
+      saveState();
+      showGame();
+      generateGrid();
+    });
+    $('#shuffleBtn')?.addEventListener('click', ()=> {
+      if (Object.keys(completions).length &&
+          !confirm('Clear your current progress and build a new card?')) return;
+      selectedBingoItems = buildCard(selectedPlayers);
+      completions = {};
+      $('#completionMessage').style.display = 'none';
+      generateGrid();
+    });
+    $('#changePlayersBtn')?.addEventListener('click', ()=> {
+      if (Object.keys(completions).length &&
+          !confirm('Changing players will reset this card. Continue?')) return;
+      showSetup();
     });
 
-    // Init
-    window.onload = function() {
-      loadGameData();
-      generateGrid();
-    };
+    // Save with Ctrl/Cmd+Enter in modal
+    document.addEventListener('keydown', (e) => {
+      if ($('#infoModal').style.display === 'flex' && (e.ctrlKey || e.metaKey) && e.key === 'Enter') saveInfo();
+    });
+
+    // ---------- Boot ----------
+    (function init(){
+      // Try to restore previous session
+      const saved = loadState();
+      if (saved) {
+        selectedPlayers   = saved.selectedPlayers || [];
+        selectedBingoItems= saved.items || [];
+        completions       = saved.completions || {};
+      } else {
+        selectedPlayers = []; selectedBingoItems = []; completions = {};
+      }
+
+      // Render checklist with any previous selections checked
+      $('#setupScreen').style.display = 'block';
+      renderChecklist();
+
+      // If there’s a saved game (items exist), show it
+      if (selectedBingoItems.length === TOTAL_SQUARES) {
+        showGame();
+        generateGrid();
+      } else {
+        showSetup();
+      }
+    })();
   </script>
 </body>
 </html>
