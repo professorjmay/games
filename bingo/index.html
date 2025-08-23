@@ -1,601 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Bingo - Find Someone Who...</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 15px;
-            color: #333;
-        }
-
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #ff6b6b, #ffa500);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .progress {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .progress-bar {
-            background: #e9ecef;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, #00d4aa, #00a8ff);
-            height: 100%;
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .progress-text {
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-        }
-
-        .controls {
-            padding: 10px 20px;
-            text-align: center;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .shuffle-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ffa500);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .shuffle-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255,107,107,0.3);
-        }
-
-        .bingo-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: #e9ecef;
-            padding: 15px;
-        }
-
-        .bingo-square {
-            background: white;
-            border: none;
-            padding: 12px 6px;
-            font-size: 11px;
-            line-height: 1.2;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-height: 75px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            border-radius: 8px;
-        }
-
-        .bingo-square:hover {
-            background: #f8f9fa;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .bingo-square.completed {
-            background: linear-gradient(135deg, #00d4aa, #00a8ff);
-            color: white;
-            transform: scale(0.98);
-        }
-
-        .bingo-square.completed:hover {
-            transform: scale(1.02);
-        }
-
-        .completed-info {
-            font-size: 10px;
-            font-weight: 600;
-            margin-top: 4px;
-            opacity: 0.9;
-            line-height: 1.1;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 350px;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        .modal h3 {
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 18px;
-        }
-
-        .modal p {
-            margin-bottom: 20px;
-            color: #666;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 10px;
-            transition: border-color 0.3s ease;
-        }
-
-        .modal input:focus {
-            outline: none;
-            border-color: #00a8ff;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #00d4aa, #00a8ff);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,168,255,0.3);
-        }
-
-        .btn-secondary {
-            background: #f8f9fa;
-            color: #666;
-            border: 1px solid #e9ecef;
-        }
-
-        .btn-secondary:hover {
-            background: #e9ecef;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-        }
-
-        .completion-message {
-            display: none;
-            background: linear-gradient(135deg, #00d4aa, #00a8ff);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-weight: 600;
-            animation: slideDown 0.5s ease;
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-
-        .instructions {
-            padding: 15px 20px;
-            background: #f8f9fa;
-            font-size: 13px;
-            color: #666;
-            text-align: center;
-            line-height: 1.4;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Family Bingo</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh; padding: 15px; color: #333;
+    }
+    .container {
+      max-width: 420px; margin: 0 auto; background: #fff; border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden;
+    }
+    .header { background: linear-gradient(135deg, #ff6b6b, #ffa500); color: #fff; padding: 20px; text-align: center; }
+    .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 14px; opacity: 0.9; }
+    .completion-message {
+      display:none; background: linear-gradient(135deg, #00d4aa, #00a8ff); color:#fff;
+      padding: 20px; text-align: center; font-weight: 600; animation: slideDown .5s ease;
+    }
+    @keyframes slideDown { from {transform: translateY(-100%);} to {transform: translateY(0);} }
+    .progress { background:#f8f9fa; padding:15px 20px; border-bottom:1px solid #e9ecef; }
+    .progress-bar { background:#e9ecef; height:8px; border-radius:4px; overflow:hidden; margin-bottom:8px; }
+    .progress-fill { background: linear-gradient(90deg, #00d4aa, #00a8ff); height:100%; width:0%; transition: width .5s ease; }
+    .progress-text { font-size:14px; color:#666; text-align:center; }
+    .instructions { padding: 15px 20px; background:#f8f9fa; font-size:13px; color:#666; text-align:center; line-height:1.4; }
+    .controls { padding:10px 20px; text-align:center; background:#f8f9fa; border-top:1px solid #e9ecef; }
+    .shuffle-btn {
+      background: linear-gradient(135deg, #ff6b6b, #ffa500); color:#fff; border:none; padding:8px 16px;
+      border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; transition:all .3s ease;
+    }
+    .shuffle-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,107,.3); }
+    .bingo-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:1px; background:#e9ecef; padding:15px; }
+    .bingo-square {
+      background:#fff; border:none; padding:12px 6px; font-size:12px; line-height:1.25; text-align:center; cursor:pointer;
+      transition: all .3s ease; min-height:88px; display:flex; flex-direction:column; justify-content:center; align-items:center;
+      position:relative; border-radius:8px;
+    }
+    .bingo-square:hover { background:#f8f9fa; transform: translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.1); }
+    .bingo-square.completed { background: linear-gradient(135deg, #00d4aa, #00a8ff); color:#fff; transform: scale(.98); }
+    .bingo-square.completed:hover { transform: scale(1.02); }
+    .completed-info { font-size:10px; font-weight:600; margin-top:6px; opacity:.95; line-height:1.1; }
+    .modal {
+      display:none; position:fixed; inset:0; background: rgba(0,0,0,.5); z-index:1000; justify-content:center; align-items:center; padding:20px;
+    }
+    .modal-content {
+      background:#fff; padding:22px; border-radius:15px; width:100%; max-width:380px; text-align:center;
+      box-shadow: 0 20px 40px rgba(0,0,0,.2);
+    }
+    .modal h3 { margin-bottom:10px; color:#333; font-size:18px; }
+    .modal p { margin-bottom:12px; color:#666; font-size:14px; line-height:1.4; }
+    .modal textarea {
+      width:100%; min-height:90px; padding:10px; border:2px solid #e9ecef; border-radius:8px; font-size:14px; resize:vertical;
+      transition: border-color .3s ease; margin-bottom:12px;
+    }
+    .modal textarea:focus { outline:none; border-color:#00a8ff; }
+    .modal-buttons { display:flex; gap:10px; }
+    .btn { flex:1; padding:12px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:all .3s ease; }
+    .btn-primary { background: linear-gradient(135deg, #00d4aa, #00a8ff); color:#fff; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,168,255,.3); }
+    .btn-secondary { background:#f8f9fa; color:#666; border:1px solid #e9ecef; }
+    .btn-secondary:hover { background:#e9ecef; }
+    .btn-danger { background:#dc3545; color:#fff; }
+    .btn-danger:hover { background:#c82333; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Find Someone Who...</h1>
-            <p>Valencia School of Speech and Languages</p>
-        </div>
-
-        <div class="completion-message" id="completionMessage">
-            🎉 Congratulations! You've completed your bingo card! 🎉
-        </div>
-
-        <div class="progress">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-text" id="progressText">0 of 21 completed</div>
-        </div>
-
-        <div class="instructions">
-            Tap squares to add info when you find matches! Click completed squares to edit.
-        </div>
-
-        <div class="bingo-grid" id="bingoGrid">
-            <!-- Squares will be generated by JavaScript -->
-        </div>
-
-        <div class="controls">
-            <button class="shuffle-btn" onclick="newGame()">🎲 Clear and Randomize</button>
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>Family Bingo</h1>
+      <p>Tap a square when you hear/see it—add a quick note for context.</p>
     </div>
 
-    <!-- Modal for info entry -->
-    <div class="modal" id="infoModal">
-        <div class="modal-content">
-            <h3 id="modalTitle">Great find!</h3>
-            <p id="modalText">Enter details for this person:</p>
-            <div class="input-group">
-                <input type="text" id="nameInput" placeholder="Name" autocomplete="off">
-                <input type="text" id="disciplineInput" placeholder="Discipline (e.g., English, Spanish)" autocomplete="off">
-                <input type="text" id="campusInput" placeholder="Campus (e.g., East, West, Osceola)" autocomplete="off">
-            </div>
-            <div class="modal-buttons" id="modalButtons">
-                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveInfo()">Save</button>
-            </div>
-        </div>
+    <div class="completion-message" id="completionMessage">
+      🎉 Bingo! You filled the whole card! 🎉
     </div>
 
-    <script>
-        const allBingoItems = [
-            "Has read 3+ books this summer",
-            "Plays a musical instrument", 
-            "Has been skydiving or bungee jumping",
-            "Knows how to juggle",
-            "Has run a 5K or marathon",
-            "Is a craft beer enthusiast",
-            "Has been to a concert this year",
-            "Can solve a Rubik's cube",
-            "Watches reality TV shows",
-            "Has a vegetable garden",
-            "Collects something unusual",
-            "Has been camping in the last year",
-            "Plays video games regularly",
-            "Has tried exotic food (insects, etc.)",
-            "Can make bread from scratch",
-            "Has more than 3 pets",
-            "Loves heavy metal or punk music",
-            "Has done karaoke recently",
-            "Speaks 3+ languages fluently",
-            "Has lived in another country",
-            "Can change a car tire",
-            "Has been to Disney World 10+ times",
-            "Listens to podcasts daily",
-            "Has taken a dance class as an adult",
-            "Uses a standing desk at work",
-            "Has been to a midnight movie premiere",
-            "Knows sign language (ASL)",
-            "Has performed in community theater",
-            "Owns a motorcycle or has ridden one",
-            "Can cook a meal from scratch without a recipe",
-            "Has been teaching for less than 5 years",
-            "Has been teaching for more than 15 years",
-            "Has published something (article, book, blog)",
-            "Volunteers regularly in the community",
-            "Has traveled to 5+ countries",
-            "Can play chess well",
-            "Has won a contest or competition",
-            "Meditates or practices yoga regularly",
-            "Has built something with their hands",
-            "Knows how to code/program",
-            "Has performed stand-up comedy",
-            "Can name all 50 U.S. state capitals"
-        ];
+    <div class="progress">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">0 of 9 completed</div>
+    </div>
 
-        let selectedBingoItems = [];
-        let completedSquares = 0;
-        let currentSquareIndex = -1;
-        let gameData = {};
-        let isEditing = false;
+    <div class="instructions">
+      Each player gets a randomized 3×3 card of family sayings/actions. Click to record what happened.
+    </div>
 
-        // Shuffle array function
-        function shuffleArray(array) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
+    <div class="bingo-grid" id="bingoGrid"></div>
+
+    <div class="controls">
+      <button class="shuffle-btn" onclick="newGame()">🎲 Clear and Randomize</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="infoModal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Nice catch!</h3>
+      <p id="modalText">Add a quick note about what happened:</p>
+      <textarea id="contextInput" placeholder="e.g., Sabrina said “Bruh” when we ran out of chips."></textarea>
+      <div class="modal-buttons" id="modalButtons">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveInfo()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ----- Config -----
+    const TOTAL_SQUARES = 9;
+    const STORAGE_KEY = 'familyBingo_v1';
+
+    // Family list; prototype uses 4 placeholders per person
+    const familyMembers = [
+      "Norm","Judy","Dick","Lois","James","Sharon","Patrice","Bill",
+      "Aidan","Collin","Sabrina","Delaney","Catherine"
+    ];
+
+    // Build placeholder deck like "Bill: saying or action 1..4"
+    const allBingoItems = familyMembers.flatMap(name =>
+      Array.from({length: 4}, (_, i) => `${name}: saying or action ${i+1}`)
+    );
+
+    // ----- State -----
+    let selectedBingoItems = [];
+    let gameData = {};               // { [index]: { context, ts } }
+    let currentSquareIndex = -1;
+
+    // ----- Utils -----
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+    function escapeHTML(s) {
+      return s.replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+      }[m]));
+    }
+
+    // ----- Card generation & storage -----
+    function generateRandomCard() {
+      return shuffleArray(allBingoItems).slice(0, TOTAL_SQUARES);
+    }
+
+    function loadGameData() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        selectedBingoItems = data.items || generateRandomCard();
+        gameData = data.completions || {};
+      } else {
+        selectedBingoItems = generateRandomCard();
+        gameData = {};
+      }
+      updateProgress();
+      saveGameData();
+    }
+
+    function saveGameData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        items: selectedBingoItems,
+        completions: gameData
+      }));
+    }
+
+    function newGame() {
+      if (Object.keys(gameData).length && !confirm('Reset your current card and progress?')) return;
+      selectedBingoItems = generateRandomCard();
+      gameData = {};
+      document.getElementById('completionMessage').style.display = 'none';
+      updateProgress();
+      generateGrid();
+      saveGameData();
+    }
+
+    // ----- UI -----
+    function generateGrid() {
+      const grid = document.getElementById('bingoGrid');
+      grid.innerHTML = '';
+
+      selectedBingoItems.forEach((item, index) => {
+        const square = document.createElement('button');
+        square.className = 'bingo-square';
+        square.innerHTML = escapeHTML(item);
+        square.onclick = () => openModal(index);
+
+        if (gameData[index]) {
+          square.classList.add('completed');
+          square.innerHTML = `${escapeHTML(item)}
+            <div class="completed-info">${escapeHTML(gameData[index].context)}</div>`;
         }
 
-        // Generate random card
-        function generateRandomCard() {
-            const shuffled = shuffleArray(allBingoItems);
-            return shuffled.slice(0, 21);
-        }
+        grid.appendChild(square);
+      });
+    }
 
-        // Load or create game data
-        function loadGameData() {
-            const saved = localStorage.getItem('facultyBingo');
-            if (saved) {
-                const data = JSON.parse(saved);
-                selectedBingoItems = data.items || generateRandomCard();
-                gameData = data.completions || {};
-            } else {
-                selectedBingoItems = generateRandomCard();
-                gameData = {};
-            }
-            completedSquares = Object.keys(gameData).length;
-            updateProgress();
-            saveGameData();
-        }
+    function openModal(squareIndex) {
+      currentSquareIndex = squareIndex;
+      const isCompleted = !!gameData[squareIndex];
 
-        // Save game data
-        function saveGameData() {
-            const data = {
-                items: selectedBingoItems,
-                completions: gameData
-            };
-            localStorage.setItem('facultyBingo', JSON.stringify(data));
-        }
+      document.getElementById('modalTitle').textContent = isCompleted ? 'Edit note' : 'Nice catch!';
+      document.getElementById('modalText').textContent = `"${selectedBingoItems[squareIndex]}"`;
+      document.getElementById('contextInput').value = isCompleted ? (gameData[squareIndex].context || '') : '';
 
-        // Generate new game
-        function newGame() {
-            if (Object.keys(gameData).length > 0) {
-                if (!confirm('This will reset your current progress. Are you sure?')) {
-                    return;
-                }
-            }
-            selectedBingoItems = generateRandomCard();
-            gameData = {};
-            completedSquares = 0;
-            document.getElementById('completionMessage').style.display = 'none';
-            updateProgress();
-            generateGrid();
-            saveGameData();
-        }
+      const buttons = document.getElementById('modalButtons');
+      buttons.innerHTML = isCompleted
+        ? `<button class="btn btn-danger" onclick="removeEntry()">Remove</button>
+           <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+           <button class="btn btn-primary" onclick="saveInfo()">Update</button>`
+        : `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+           <button class="btn btn-primary" onclick="saveInfo()">Save</button>`;
 
-        // Generate bingo grid
-        function generateGrid() {
-            const grid = document.getElementById('bingoGrid');
-            grid.innerHTML = '';
-            
-            selectedBingoItems.forEach((item, index) => {
-                const square = document.createElement('button');
-                square.className = 'bingo-square';
-                square.innerHTML = item;
-                square.onclick = () => openModal(index);
-                
-                // Check if this square was previously completed
-                if (gameData[index]) {
-                    square.classList.add('completed');
-                    const info = gameData[index];
-                    square.innerHTML = item + 
-                        '<div class="completed-info">' + 
-                        info.name + '<br>' + 
-                        info.discipline + '<br>' + 
-                        info.campus + 
-                        '</div>';
-                }
-                
-                grid.appendChild(square);
-            });
-        }
+      document.getElementById('infoModal').style.display = 'flex';
+      document.getElementById('contextInput').focus();
+    }
 
-        // Open info entry modal
-        function openModal(squareIndex) {
-            currentSquareIndex = squareIndex;
-            const isCompleted = gameData[squareIndex];
-            isEditing = isCompleted;
-            
-            document.getElementById('modalTitle').textContent = 
-                isCompleted ? 'Edit Information' : 'Great find!';
-            document.getElementById('modalText').textContent = 
-                `"${selectedBingoItems[squareIndex]}"`;
-            
-            // Pre-fill if editing
-            if (isCompleted) {
-                document.getElementById('nameInput').value = gameData[squareIndex].name || '';
-                document.getElementById('disciplineInput').value = gameData[squareIndex].discipline || '';
-                document.getElementById('campusInput').value = gameData[squareIndex].campus || '';
-            } else {
-                document.getElementById('nameInput').value = '';
-                document.getElementById('disciplineInput').value = '';
-                document.getElementById('campusInput').value = '';
-            }
+    function closeModal() {
+      document.getElementById('infoModal').style.display = 'none';
+      currentSquareIndex = -1;
+    }
 
-            // Update buttons for editing
-            const buttonsContainer = document.getElementById('modalButtons');
-            if (isCompleted) {
-                buttonsContainer.innerHTML = `
-                    <button class="btn btn-danger" onclick="removeEntry()">Remove</button>
-                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                    <button class="btn btn-primary" onclick="saveInfo()">Update</button>
-                `;
-            } else {
-                buttonsContainer.innerHTML = `
-                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                    <button class="btn btn-primary" onclick="saveInfo()">Save</button>
-                `;
-            }
-            
-            document.getElementById('infoModal').style.display = 'flex';
-            document.getElementById('nameInput').focus();
-        }
+    function removeEntry() {
+      if (gameData[currentSquareIndex]) {
+        delete gameData[currentSquareIndex];
+        saveGameData();
 
-        // Close modal
-        function closeModal() {
-            document.getElementById('infoModal').style.display = 'none';
-            currentSquareIndex = -1;
-            isEditing = false;
-        }
+        const square = document.querySelectorAll('.bingo-square')[currentSquareIndex];
+        square.classList.remove('completed');
+        square.innerHTML = escapeHTML(selectedBingoItems[currentSquareIndex]);
 
-        // Remove entry
-        function removeEntry() {
-            if (gameData[currentSquareIndex]) {
-                delete gameData[currentSquareIndex];
-                saveGameData();
-                
-                // Update the square
-                const squares = document.querySelectorAll('.bingo-square');
-                const square = squares[currentSquareIndex];
-                square.classList.remove('completed');
-                square.innerHTML = selectedBingoItems[currentSquareIndex];
-                
-                // Update progress
-                completedSquares = Object.keys(gameData).length;
-                updateProgress();
-                
-                // Hide completion message if shown
-                document.getElementById('completionMessage').style.display = 'none';
-            }
-            closeModal();
-        }
+        updateProgress();
+        document.getElementById('completionMessage').style.display = 'none';
+      }
+      closeModal();
+    }
 
-        // Save info and mark square as complete
-        function saveInfo() {
-            const name = document.getElementById('nameInput').value.trim();
-            const discipline = document.getElementById('disciplineInput').value.trim();
-            const campus = document.getElementById('campusInput').value.trim();
-            
-            if (!name) {
-                alert('Please enter a name');
-                return;
-            }
+    function saveInfo() {
+      const context = document.getElementById('contextInput').value.trim();
+      if (!context) { alert('Please add a quick note.'); return; }
 
-            // Save to game data
-            gameData[currentSquareIndex] = {
-                name: name,
-                discipline: discipline,
-                campus: campus
-            };
-            saveGameData();
+      gameData[currentSquareIndex] = { context, ts: new Date().toISOString() };
+      saveGameData();
 
-            // Update the square
-            const squares = document.querySelectorAll('.bingo-square');
-            const square = squares[currentSquareIndex];
-            square.classList.add('completed');
-            square.innerHTML = selectedBingoItems[currentSquareIndex] + 
-                '<div class="completed-info">' + 
-                name + '<br>' + 
-                (discipline || '') + (discipline && campus ? '<br>' : '') +
-                (campus || '') + 
-                '</div>';
+      const square = document.querySelectorAll('.bingo-square')[currentSquareIndex];
+      square.classList.add('completed');
+      square.innerHTML = `${escapeHTML(selectedBingoItems[currentSquareIndex])}
+        <div class="completed-info">${escapeHTML(context)}</div>`;
 
-            // Update progress
-            completedSquares = Object.keys(gameData).length;
-            updateProgress();
+      updateProgress();
+      if (Object.keys(gameData).length === TOTAL_SQUARES) setTimeout(showCompletion, 200);
+      closeModal();
+    }
 
-            // Check for completion
-            if (completedSquares === 21) {
-                setTimeout(showCompletion, 300);
-            }
+    function updateProgress() {
+      const completed = Object.keys(gameData).length;
+      document.getElementById('progressFill').style.width = `${(completed / TOTAL_SQUARES) * 100}%`;
+      document.getElementById('progressText').textContent = `${completed} of ${TOTAL_SQUARES} completed`;
+    }
 
-            closeModal();
-        }
+    function showCompletion() {
+      document.getElementById('completionMessage').style.display = 'block';
+    }
 
-        // Update progress bar and text
-        function updateProgress() {
-            const percentage = (completedSquares / 21) * 100;
-            document.getElementById('progressFill').style.width = percentage + '%';
-            document.getElementById('progressText').textContent = 
-                `${completedSquares} of 21 completed`;
-        }
+    // Optional: Ctrl/Cmd+Enter to save from textarea
+    document.addEventListener('keydown', (e) => {
+      const modalOpen = document.getElementById('infoModal').style.display === 'flex';
+      if (!modalOpen) return;
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') saveInfo();
+    });
 
-        // Show completion message
-        function showCompletion() {
-            document.getElementById('completionMessage').style.display = 'block';
-        }
-
-        // Handle Enter key in modal
-        document.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && document.getElementById('infoModal').style.display === 'flex') {
-                saveInfo();
-            }
-        });
-
-        // Initialize the game
-        window.onload = function() {
-            loadGameData();
-            generateGrid();
-        };
-    </script>
+    // Init
+    window.onload = function() {
+      loadGameData();
+      generateGrid();
+    };
+  </script>
 </body>
 </html>
-
